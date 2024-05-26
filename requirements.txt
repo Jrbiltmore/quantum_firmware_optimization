@@ -1,0 +1,8 @@
+psutil
+py-cpuinfo
+pySMART
+tensorflow
+tensorflow_quantum
+cirq
+qiskit
+pennylane
