@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -35,7 +35,7 @@ def preprocess_data(data):
         # Convert 'total_storage' column to numerical values
         data['total_storage'] = data['total_storage'].apply(lambda x: float(x.replace('GB', '')) if 'GB' in x else float(x.replace('TB', '')) * 1024)
         
-        features = data[['clock_speed', 'cores', 'logical_cores', 'memory', 'total_storage']]
+        features = data[['clock_speed', 'cores', 'logical_cores', 'memory', 'total_storage', 'performance_index']]
         labels = data['brand']
         logger.info("Data preprocessing completed")
         return features, labels
@@ -57,19 +57,38 @@ def train_model(X_train, y_train, algorithm='random_forest'):
     """Train the model with the training data using the specified algorithm."""
     try:
         if algorithm == 'random_forest':
-            model = RandomForestClassifier(n_estimators=100, random_state=42)
+            model = RandomForestClassifier(random_state=42)
+            param_grid = {
+                'n_estimators': [50, 100, 200],
+                'max_depth': [None, 10, 20, 30],
+                'min_samples_split': [2, 5, 10]
+            }
         elif algorithm == 'gradient_boosting':
-            model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+            model = GradientBoostingClassifier(random_state=42)
+            param_grid = {
+                'n_estimators': [50, 100, 200],
+                'learning_rate': [0.01, 0.1, 0.2],
+                'max_depth': [3, 4, 5]
+            }
         elif algorithm == 'svm':
             model = SVC(kernel='linear', random_state=42)
+            param_grid = {
+                'C': [0.1, 1, 10, 100]
+            }
         elif algorithm == 'knn':
-            model = KNeighborsClassifier(n_neighbors=5)
+            model = KNeighborsClassifier()
+            param_grid = {
+                'n_neighbors': [3, 5, 7, 9]
+            }
         else:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
         
-        model.fit(X_train, y_train)
-        logger.info(f"Model training completed using {algorithm}")
-        return model
+        grid_search = GridSearchCV(model, param_grid, cv=5, scoring='accuracy')
+        grid_search.fit(X_train, y_train)
+        
+        best_model = grid_search.best_estimator_
+        logger.info(f"Model training completed using {algorithm} with best parameters: {grid_search.best_params_}")
+        return best_model
     except Exception as e:
         logger.error(f"Error training model with {algorithm}: {e}")
         raise
