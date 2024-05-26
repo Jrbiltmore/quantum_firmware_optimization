@@ -30,13 +30,18 @@ def load_data(data_path):
 def preprocess_data(data):
     """Preprocess the dataset and split it into features and labels."""
     try:
-        data['memory'] = data['memory'].str.replace('GB', '').astype(float)
+        # Identify columns that should be numeric
+        potential_numeric_columns = ['Price', 'TDP', 'Boost Clock', 'Base Clock', 'Turbo Clock', 'Watt', 'Capacity', 'Memory', 'Size']
         
-        # Convert 'total_storage' column to numerical values
-        data['total_storage'] = data['total_storage'].apply(lambda x: float(x.replace('GB', '')) if 'GB' in x else float(x.replace('TB', '')) * 1024)
+        for column in data.columns:
+            if column in potential_numeric_columns:
+                # Remove non-numeric characters
+                data[column] = data[column].replace('[^0-9.]', '', regex=True)
+                # Convert to numeric
+                data[column] = pd.to_numeric(data[column], errors='coerce')
         
-        features = data[['clock_speed', 'cores', 'logical_cores', 'memory', 'total_storage', 'performance_index']]
-        labels = data['brand']
+        features = data.drop(columns=['Producer'])
+        labels = data['Producer']
         logger.info("Data preprocessing completed")
         return features, labels
     except Exception as e:
@@ -59,31 +64,32 @@ def train_model(X_train, y_train, algorithm='random_forest'):
         if algorithm == 'random_forest':
             model = RandomForestClassifier(random_state=42)
             param_grid = {
-                'n_estimators': [50, 100, 200],
-                'max_depth': [None, 10, 20, 30],
-                'min_samples_split': [2, 5, 10]
+                'n_estimators': [50, 100],
+                'max_depth': [10, 20],
+                'min_samples_split': [5, 10]
             }
         elif algorithm == 'gradient_boosting':
             model = GradientBoostingClassifier(random_state=42)
             param_grid = {
-                'n_estimators': [50, 100, 200],
-                'learning_rate': [0.01, 0.1, 0.2],
-                'max_depth': [3, 4, 5]
+                'n_estimators': [50, 100],
+                'learning_rate': [0.01, 0.1],
+                'max_depth': [3, 4]
             }
         elif algorithm == 'svm':
             model = SVC(kernel='linear', random_state=42)
             param_grid = {
-                'C': [0.1, 1, 10, 100]
+                'C': [0.1, 1, 10]
             }
         elif algorithm == 'knn':
             model = KNeighborsClassifier()
             param_grid = {
-                'n_neighbors': [3, 5, 7, 9]
+                'n_neighbors': [3, 5, 7]
             }
         else:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
         
-        grid_search = GridSearchCV(model, param_grid, cv=5, scoring='accuracy')
+        logger.info("Starting grid search...")
+        grid_search = GridSearchCV(model, param_grid, cv=3, scoring='accuracy')
         grid_search.fit(X_train, y_train)
         
         best_model = grid_search.best_estimator_
@@ -134,3 +140,4 @@ if __name__ == "__main__":
     save_model(model, args.model_path)
 
     logger.info("Model training and evaluation completed.")
+
