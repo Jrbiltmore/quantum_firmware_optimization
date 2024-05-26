@@ -1,5 +1,3 @@
-# quantum_firmware_optimization/scripts/train_model.py
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -30,6 +28,8 @@ def load_data(data_path):
 def preprocess_data(data):
     """Preprocess the dataset and split it into features and labels."""
     try:
+        data['memory'] = data['memory'].str.replace('GB', '').astype(float)
+        data['total_storage'] = data['total_storage'].str.replace('TB', '').astype(float) * 1024  # Convert TB to GB
         features = data[['clock_speed', 'cores', 'logical_cores', 'memory', 'total_storage']]
         labels = data['brand']
         logger.info("Data preprocessing completed")
