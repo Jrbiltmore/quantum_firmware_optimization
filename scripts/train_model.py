@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import logging
@@ -51,15 +53,25 @@ def split_data(features, labels, test_size=0.2, random_state=42):
         logger.error(f"Error splitting data: {e}")
         raise
 
-def train_model(X_train, y_train):
-    """Train the RandomForest model with the training data."""
+def train_model(X_train, y_train, algorithm='random_forest'):
+    """Train the model with the training data using the specified algorithm."""
     try:
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        if algorithm == 'random_forest':
+            model = RandomForestClassifier(n_estimators=100, random_state=42)
+        elif algorithm == 'gradient_boosting':
+            model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+        elif algorithm == 'svm':
+            model = SVC(kernel='linear', random_state=42)
+        elif algorithm == 'knn':
+            model = KNeighborsClassifier(n_neighbors=5)
+        else:
+            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        
         model.fit(X_train, y_train)
-        logger.info("Model training completed")
+        logger.info(f"Model training completed using {algorithm}")
         return model
     except Exception as e:
-        logger.error(f"Error training model: {e}")
+        logger.error(f"Error training model with {algorithm}: {e}")
         raise
 
 def evaluate_model(model, X_test, y_test):
@@ -90,6 +102,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a machine learning model with the given dataset.")
     parser.add_argument('--data_path', type=str, required=True, help='Path to the dataset CSV file')
     parser.add_argument('--model_path', type=str, default='../models/model.h5', help='Path to save the trained model')
+    parser.add_argument('--algorithm', type=str, default='random_forest', choices=['random_forest', 'gradient_boosting', 'svm', 'knn'], help='Algorithm to use for training the model')
     args = parser.parse_args()
 
     logger.info("Starting model training...")
@@ -97,7 +110,7 @@ if __name__ == "__main__":
     data = load_data(args.data_path)
     features, labels = preprocess_data(data)
     X_train, X_test, y_train, y_test = split_data(features, labels)
-    model = train_model(X_train, y_train)
+    model = train_model(X_train, y_train, algorithm=args.algorithm)
     evaluate_model(model, X_test, y_test)
     save_model(model, args.model_path)
 
