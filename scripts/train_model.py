@@ -29,7 +29,10 @@ def preprocess_data(data):
     """Preprocess the dataset and split it into features and labels."""
     try:
         data['memory'] = data['memory'].str.replace('GB', '').astype(float)
-        data['total_storage'] = data['total_storage'].str.replace('TB', '').astype(float) * 1024  # Convert TB to GB
+        
+        # Convert 'total_storage' column to numerical values
+        data['total_storage'] = data['total_storage'].apply(lambda x: float(x.replace('GB', '')) if 'GB' in x else float(x.replace('TB', '')) * 1024)
+        
         features = data[['clock_speed', 'cores', 'logical_cores', 'memory', 'total_storage']]
         labels = data['brand']
         logger.info("Data preprocessing completed")
