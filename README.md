@@ -1,5 +1,3 @@
-Sure, here is the revised `README.md` with the licensing updated to Jacob Thomas Messer Redmond and including a monetization section.
-
 ```markdown
 # Quantum Firmware Optimization Project
 
