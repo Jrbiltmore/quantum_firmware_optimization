@@ -1,0 +1,9 @@
+{
+    "logging": {
+        "level": "DEBUG",
+        "file": "quantum_circuit.log"
+    },
+    "quantum_circuit": {
+        "theta": 0.5
+    }
+}
