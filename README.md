@@ -1,4 +1,4 @@
-```markdown
+
 # Quantum Firmware Optimization Project
 
 ## Overview
@@ -52,7 +52,7 @@ quantum_firmware_optimization/
 2. **Create a virtual environment:**
    ```bash
    python -m venv venv
-   source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
+   source venv/bin/activate   # On Windows, use `venv\Scriptsctivate`
    ```
 
 3. **Install the required dependencies:**
@@ -146,22 +146,4 @@ By implementing these monetization strategies, the Quantum Firmware Optimization
 
 ## Acknowledgments
 
-Special thanks to ChatGPT-4o for their invaluable support, guidance and hard work.
-
-```
-
-### Explanation:
-
-1. **Overview**: Provides a high-level summary of the project, including its purpose and key features.
-2. **Project Structure**: Lists the directory structure of the project for better understanding and navigation.
-3. **Installation**: Step-by-step instructions on how to set up the project, including cloning the repository, creating a virtual environment, and installing dependencies.
-4. **Usage**: Instructions on how to train the model, evaluate the model, and run the main workflow.
-5. **Directory Details**: Descriptions of the contents and purpose of each directory in the project.
-6. **Testing**: Instructions on how to run unit tests to verify the functionality of the code.
-7. **Dependencies**: Lists the required dependencies for the project.
-8. **Contributing**: Guidelines for contributing to the project.
-9. **License**: Updated to indicate licensing under Jacob Thomas Messer Redmond.
-10. **Monetization**: A new section providing strategies for monetizing the project.
-11. **Acknowledgments**: A section to thank contributors, specifically mentioning Jacob Thomas Messer Redmond.
-
-This `README.md` file provides comprehensive documentation for users and contributors, making it easy to understand, set up, use, and monetize the project.
+Special thanks to Jacob Thomas Messer Redmond and the contributors for their invaluable support and resources.
